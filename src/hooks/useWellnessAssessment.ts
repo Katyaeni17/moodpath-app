@@ -69,9 +69,9 @@ export const useWellnessAssessment = () => {
     try {
       const response = await supabase.functions.invoke('crisis-detection', {
         body: {
-          userId: user?.id || null,
-          sessionId: user ? null : sessionId,
-          assessmentData
+          user_id: user?.id || null,
+          session_id: user ? null : sessionId,
+          assessment_data: assessmentData
         }
       })
 

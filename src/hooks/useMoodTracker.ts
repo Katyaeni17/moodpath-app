@@ -66,7 +66,9 @@ export const useMoodTracker = () => {
       if (streakError) {
         console.error('Error updating streak:', streakError)
       } else if (streakData) {
-        setCurrentStreak(streakData)
+        const streak = streakData as any
+        setCurrentStreak(streak.current_streak || 0)
+        setTotalCheckIns(streak.total_check_ins || 0)
       }
 
       // Check for crisis indicators
@@ -77,7 +79,7 @@ export const useMoodTracker = () => {
 
       toast({
         title: "Mood recorded!",
-        description: `Feeling ${moodLabel.toLowerCase()}. Current streak: ${streakData || currentStreak} days`,
+        description: `Feeling ${moodLabel.toLowerCase()}. Current streak: ${(streakData as any)?.current_streak || currentStreak} days`,
       })
 
       return { success: true }
@@ -98,9 +100,9 @@ export const useMoodTracker = () => {
     try {
       const response = await supabase.functions.invoke('crisis-detection', {
         body: {
-          userId: user?.id || null,
-          sessionId: user ? null : sessionId,
-          moodValue,
+          user_id: user?.id || null,
+          session_id: user ? null : sessionId,
+          mood_value: moodValue,
           notes
         }
       })

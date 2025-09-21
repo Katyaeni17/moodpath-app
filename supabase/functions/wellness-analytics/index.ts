@@ -1,3 +1,4 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -8,16 +9,18 @@ const corsHeaders = {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders })
   }
 
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { timeframe = '7d', userId = null, sessionId = null } = await req.json()
+    const { timeframe = '7d', user_id = null, session_id = null } = await req.json()
+    
+    console.log('Analytics request:', { timeframe, user_id, session_id })
 
     // Calculate date range
     const endDate = new Date()
@@ -50,12 +53,12 @@ serve(async (req) => {
       .gte('created_at', startDate.toISOString())
       .lte('created_at', endDate.toISOString())
 
-    if (userId) {
-      moodQuery = moodQuery.eq('user_id', userId)
-      assessmentQuery = assessmentQuery.eq('user_id', userId)
-    } else if (sessionId) {
-      moodQuery = moodQuery.eq('session_id', sessionId)
-      assessmentQuery = assessmentQuery.eq('session_id', sessionId)
+    if (user_id) {
+      moodQuery = moodQuery.eq('user_id', user_id)
+      assessmentQuery = assessmentQuery.eq('user_id', user_id)
+    } else if (session_id) {
+      moodQuery = moodQuery.eq('session_id', session_id)
+      assessmentQuery = assessmentQuery.eq('session_id', session_id)
     }
 
     const [moodResult, assessmentResult] = await Promise.all([
@@ -79,12 +82,14 @@ serve(async (req) => {
         totalEntries: moodEntries.length
       },
       wellness: {
-        averageStress: assessments.length ?
+        stress: assessments.length ?
           Math.round((assessments.reduce((sum, a) => sum + a.stress_level, 0) / assessments.length) * 10) / 10 : 0,
-        averageSleep: assessments.length ?
+        sleep: assessments.length ?
           Math.round((assessments.reduce((sum, a) => sum + a.sleep_quality, 0) / assessments.length) * 10) / 10 : 0,
-        averageSocial: assessments.length ?
+        social: assessments.length ?
           Math.round((assessments.reduce((sum, a) => sum + a.social_connection, 0) / assessments.length) * 10) / 10 : 0,
+        academic: assessments.length ?
+          Math.round((assessments.reduce((sum, a) => sum + a.academic_pressure, 0) / assessments.length) * 10) / 10 : 0,
         totalAssessments: assessments.length
       },
       insights: generateInsights(moodEntries, assessments),

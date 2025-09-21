@@ -15,9 +15,10 @@ interface AnalyticsData {
     totalEntries: number;
   };
   wellness: {
-    averageStress: number;
-    averageSleep: number;
-    averageSocial: number;
+    stress: number;
+    sleep: number;
+    social: number;
+    academic: number;
     totalAssessments: number;
   };
   insights: string[];
@@ -40,8 +41,8 @@ const AnalyticsDashboard = () => {
       const { data, error } = await supabase.functions.invoke('wellness-analytics', {
         body: {
           timeframe,
-          userId: user?.id || null,
-          sessionId: user ? null : sessionId
+          user_id: user?.id || null,
+          session_id: user ? null : sessionId
         }
       });
 
@@ -165,8 +166,8 @@ const AnalyticsDashboard = () => {
                 <span className="text-2xl">😰</span>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{analytics.wellness.averageStress}/10</div>
-                <Progress value={(analytics.wellness.averageStress / 10) * 100} className="mt-2" />
+                <div className="text-2xl font-bold">{analytics.wellness.stress}/10</div>
+                <Progress value={(analytics.wellness.stress / 10) * 100} className="mt-2" />
               </CardContent>
             </Card>
 
@@ -176,8 +177,8 @@ const AnalyticsDashboard = () => {
                 <span className="text-2xl">😴</span>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{analytics.wellness.averageSleep}/5</div>
-                <Progress value={(analytics.wellness.averageSleep / 5) * 100} className="mt-2" />
+                <div className="text-2xl font-bold">{analytics.wellness.sleep}/10</div>
+                <Progress value={(analytics.wellness.sleep / 10) * 100} className="mt-2" />
               </CardContent>
             </Card>
           </div>
@@ -237,25 +238,33 @@ const AnalyticsDashboard = () => {
                 <div>
                   <div className="flex justify-between text-sm">
                     <span>Stress Level</span>
-                    <span>{analytics.wellness.averageStress}/10</span>
+                    <span>{analytics.wellness.stress}/10</span>
                   </div>
-                  <Progress value={(analytics.wellness.averageStress / 10) * 100} className="mt-1" />
+                  <Progress value={(analytics.wellness.stress / 10) * 100} className="mt-1" />
                 </div>
                 
                 <div>
                   <div className="flex justify-between text-sm">
                     <span>Sleep Quality</span>
-                    <span>{analytics.wellness.averageSleep}/5</span>
+                    <span>{analytics.wellness.sleep}/10</span>
                   </div>
-                  <Progress value={(analytics.wellness.averageSleep / 5) * 100} className="mt-1" />
+                  <Progress value={(analytics.wellness.sleep / 10) * 100} className="mt-1" />
                 </div>
                 
                 <div>
                   <div className="flex justify-between text-sm">
                     <span>Social Connection</span>
-                    <span>{analytics.wellness.averageSocial}/5</span>
+                    <span>{analytics.wellness.social}/10</span>
                   </div>
-                  <Progress value={(analytics.wellness.averageSocial / 5) * 100} className="mt-1" />
+                  <Progress value={(analytics.wellness.social / 10) * 100} className="mt-1" />
+                </div>
+                
+                <div>
+                  <div className="flex justify-between text-sm">
+                    <span>Academic Pressure</span>
+                    <span>{analytics.wellness.academic}/10</span>
+                  </div>
+                  <Progress value={(analytics.wellness.academic / 10) * 100} className="mt-1" />
                 </div>
               </CardContent>
             </Card>

@@ -1,3 +1,4 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -8,36 +9,38 @@ const corsHeaders = {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders })
   }
 
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
     const { 
-      userId = null, 
-      sessionId = null, 
-      moodValue, 
-      assessmentData = null,
+      user_id = null, 
+      session_id = null, 
+      mood_value, 
+      assessment_data = null,
       notes = null 
     } = await req.json()
+    
+    console.log('Crisis detection request:', { user_id, session_id, mood_value, notes })
 
     let alertLevel = 'low'
     const triggerData: any = {}
     let shouldCreateAlert = false
 
     // Crisis detection logic
-    if (moodValue && moodValue <= 1) {
+    if (mood_value && mood_value <= 1) {
       alertLevel = 'high'
-      triggerData.lowMood = { value: moodValue, timestamp: new Date() }
+      triggerData.lowMood = { value: mood_value, timestamp: new Date() }
       shouldCreateAlert = true
     }
 
-    if (assessmentData) {
-      const { stress_level, sleep_quality, social_connection, academic_pressure } = assessmentData
+    if (assessment_data) {
+      const { stress_level, sleep_quality, social_connection, academic_pressure } = assessment_data
       
       // High stress + poor sleep + low social connection = critical
       if (stress_level >= 9 && sleep_quality <= 1 && social_connection <= 1) {
@@ -89,8 +92,8 @@ serve(async (req) => {
       const { error: alertError } = await supabase
         .from('crisis_alerts')
         .insert({
-          user_id: userId,
-          session_id: sessionId,
+          user_id: user_id,
+          session_id: session_id,
           alert_level: alertLevel,
           trigger_data: triggerData
         })
@@ -104,7 +107,7 @@ serve(async (req) => {
         const recentAlerts = await supabase
           .from('crisis_alerts')
           .select('*')
-          .or(userId ? `user_id.eq.${userId}` : `session_id.eq.${sessionId}`)
+          .or(user_id ? `user_id.eq.${user_id}` : `session_id.eq.${session_id}`)
           .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()) // Last 7 days
           .eq('is_resolved', false)
 
