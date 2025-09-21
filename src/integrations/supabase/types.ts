@@ -14,13 +14,189 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      crisis_alerts: {
+        Row: {
+          alert_level: string
+          created_at: string
+          id: string
+          is_resolved: boolean
+          resolved_at: string | null
+          session_id: string | null
+          trigger_data: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          alert_level: string
+          created_at?: string
+          id?: string
+          is_resolved?: boolean
+          resolved_at?: string | null
+          session_id?: string | null
+          trigger_data?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          alert_level?: string
+          created_at?: string
+          id?: string
+          is_resolved?: boolean
+          resolved_at?: string | null
+          session_id?: string | null
+          trigger_data?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      mood_entries: {
+        Row: {
+          created_at: string
+          id: string
+          mood_label: string
+          mood_value: number
+          notes: string | null
+          session_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mood_label: string
+          mood_value: number
+          notes?: string | null
+          session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mood_label?: string
+          mood_value?: number
+          notes?: string | null
+          session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      resource_interactions: {
+        Row: {
+          created_at: string
+          id: string
+          interaction_type: string
+          resource_id: string
+          resource_type: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interaction_type: string
+          resource_id: string
+          resource_type: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          resource_id?: string
+          resource_type?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          created_at: string
+          current_streak: number
+          id: string
+          is_anonymous: boolean
+          longest_streak: number
+          preferred_name: string | null
+          session_id: string | null
+          total_check_ins: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          is_anonymous?: boolean
+          longest_streak?: number
+          preferred_name?: string | null
+          session_id?: string | null
+          total_check_ins?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          is_anonymous?: boolean
+          longest_streak?: number
+          preferred_name?: string | null
+          session_id?: string | null
+          total_check_ins?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      wellness_assessments: {
+        Row: {
+          academic_pressure: number
+          created_at: string
+          id: string
+          recommendations: string[] | null
+          session_id: string | null
+          sleep_quality: number
+          social_connection: number
+          stress_level: number
+          total_score: number | null
+          user_id: string | null
+        }
+        Insert: {
+          academic_pressure: number
+          created_at?: string
+          id?: string
+          recommendations?: string[] | null
+          session_id?: string | null
+          sleep_quality: number
+          social_connection: number
+          stress_level: number
+          total_score?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          academic_pressure?: number
+          created_at?: string
+          id?: string
+          recommendations?: string[] | null
+          session_id?: string | null
+          sleep_quality?: number
+          social_connection?: number
+          stress_level?: number
+          total_score?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      update_user_streak: {
+        Args: { p_session_id?: string; p_user_id?: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
